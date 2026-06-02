@@ -16,12 +16,16 @@ A NeoForge compatibility mod for Minecraft 1.21.1 that extends the [Corpse](http
 
 ### XP Saving
 
-When a player dies their experience is stored inside the corpse instead of dropping on the floor. Opening the corpse returns the XP directly to the player.
+When a player dies their experience is stored inside the corpse instead of dropping on the floor. Opening the corpse returns the XP to whoever loots it.
 
 - Toggle on/off per server (default: on)
 - Configure what percentage of XP is returned (default: 100%)
 - Server controls the default display style of the XP return message
 - Players can override the message display in their own client config
+
+### Scaled Corpse Rendering
+
+Corpses now visually match the scale of the player who died. If a player had a custom entity size (from a scaling mod or `Attributes.SCALE`), their corpse will appear at the same scale rather than the default fixed size.
 
 ## Configuration
 

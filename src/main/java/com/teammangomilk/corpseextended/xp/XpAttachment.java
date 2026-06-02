@@ -15,6 +15,8 @@ public class XpAttachment
 
     public static final Supplier<AttachmentType<Integer>> STORED_XP = ATTACHMENTS.register("stored_xp", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
 
+    public static final Supplier<AttachmentType<Float>> STORED_SCALE = ATTACHMENTS.register("stored_scale", () -> AttachmentType.builder(() -> 1.0f).serialize(Codec.FLOAT).build());
+
     public static void register(IEventBus modEventBus)
     {
         ATTACHMENTS.register(modEventBus);

@@ -10,8 +10,6 @@ java {
 version = mod_version
 group = 'com.teammangomilk.corpseextended'
 
-minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
-
 runs {
     configureEach {
         systemProperty 'forge.logging.console.level', 'debug'

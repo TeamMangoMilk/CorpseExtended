@@ -1,18 +1,27 @@
 package com.teammangomilk.corpseextended;
 
+import com.teammangomilk.corpseextended.client.ClientScaleCache;
+import com.teammangomilk.corpseextended.client.ScaledCorpseRenderer;
 import com.teammangomilk.corpseextended.config.CorpseExtendedClientConfig;
 import com.teammangomilk.corpseextended.config.CorpseExtendedConfig;
 import com.teammangomilk.corpseextended.events.CorpseEvents;
 import com.teammangomilk.corpseextended.net.ClientMessageHandler;
+import com.teammangomilk.corpseextended.net.MessageCorpseScale;
 import com.teammangomilk.corpseextended.net.MessageXpReturned;
 import com.teammangomilk.corpseextended.xp.XpAttachment;
+import de.maxhenkel.corpse.Main;
+import de.maxhenkel.corpse.entities.CorpseEntity;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +40,7 @@ public class CorpseExtended
         if (FMLEnvironment.dist.isClient())
         {
             modContainer.registerConfig(ModConfig.Type.CLIENT, CorpseExtendedClientConfig.SPEC);
+            modEventBus.addListener(this::clientSetup);
         }
 
         XpAttachment.register(modEventBus);
@@ -43,25 +53,32 @@ public class CorpseExtended
         NeoForge.EVENT_BUS.register(new CorpseEvents());
     }
 
+    private void clientSetup(FMLClientSetupEvent event)
+    {
+        EntityRenderers.register(Main.CORPSE_ENTITY_TYPE.get(), ScaledCorpseRenderer::new);
+
+        NeoForge.EVENT_BUS.addListener((EntityLeaveLevelEvent e) ->
+        {
+            if (e.getEntity() instanceof CorpseEntity corpse && e.getLevel().isClientSide())
+            {
+                ClientScaleCache.remove(corpse.getId());
+            }
+        });
+    }
+
     private void onRegisterPayloads(RegisterPayloadHandlersEvent event)
     {
         PayloadRegistrar registrar = event.registrar(MOD_ID).versioned("1");
 
         if (FMLEnvironment.dist.isClient())
         {
-            registrar.playToClient(
-                    MessageXpReturned.TYPE,
-                    MessageXpReturned.STREAM_CODEC,
-                    ClientMessageHandler::handleXpReturned
-            );
+            registrar.playToClient(MessageXpReturned.TYPE, MessageXpReturned.STREAM_CODEC, ClientMessageHandler::handleXpReturned);
+            registrar.playToClient(MessageCorpseScale.TYPE, MessageCorpseScale.STREAM_CODEC, ClientMessageHandler::handleCorpseScale);
         }
         else
         {
-            registrar.playToClient(
-                    MessageXpReturned.TYPE,
-                    MessageXpReturned.STREAM_CODEC,
-                    (msg, ctx) -> {}
-            );
+            registrar.playToClient(MessageXpReturned.TYPE, MessageXpReturned.STREAM_CODEC, (msg, ctx) -> {});
+            registrar.playToClient(MessageCorpseScale.TYPE, MessageCorpseScale.STREAM_CODEC, (msg, ctx) -> {});
         }
     }
 }

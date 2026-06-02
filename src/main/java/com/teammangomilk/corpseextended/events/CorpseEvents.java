@@ -2,6 +2,7 @@ package com.teammangomilk.corpseextended.events;
 
 import com.teammangomilk.corpseextended.CorpseExtended;
 import com.teammangomilk.corpseextended.config.CorpseExtendedConfig;
+import com.teammangomilk.corpseextended.net.MessageCorpseScale;
 import com.teammangomilk.corpseextended.net.MessageXpReturned;
 import com.teammangomilk.corpseextended.xp.XpAttachment;
 import de.maxhenkel.corpse.entities.CorpseEntity;
@@ -20,35 +21,50 @@ import java.util.UUID;
 public class CorpseEvents
 {
     private static final Map<UUID, Integer> pendingXp = new HashMap<>();
+    private static final Map<UUID, Float> pendingScale = new HashMap<>();
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event)
     {
-        if (!CorpseExtendedConfig.XP_SAVING_ENABLED.get()) return;
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        int xp = player.totalExperience;
-        if (xp > 0)
+        UUID uuid = player.getUUID();
+
+        if (CorpseExtendedConfig.XP_SAVING_ENABLED.get())
         {
-            pendingXp.put(player.getUUID(), xp);
-            CorpseExtended.LOGGER.debug("Stored {} XP for player {}", xp, player.getName().getString());
+            int xp = player.totalExperience;
+            if (xp > 0)
+            {
+                pendingXp.put(uuid, xp);
+            }
+        }
+
+        float scale = player.getScale();
+        if (scale != 1.0f)
+        {
+            pendingScale.put(uuid, scale);
         }
     }
 
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event)
     {
-        if (!CorpseExtendedConfig.XP_SAVING_ENABLED.get()) return;
         if (!(event.getEntity() instanceof CorpseEntity corpse)) return;
         if (event.getLevel().isClientSide()) return;
 
         UUID ownerUuid = corpse.getDeath().getPlayerUUID();
+
         Integer xp = pendingXp.remove(ownerUuid);
         if (xp != null && xp > 0)
         {
             corpse.setData(XpAttachment.STORED_XP, xp);
-            CorpseExtended.LOGGER.debug("Attached {} XP to corpse of {}", xp, ownerUuid);
         }
+
+        Float scale = pendingScale.remove(ownerUuid);
+        float resolvedScale = (scale != null) ? scale : 1.0f;
+        corpse.setData(XpAttachment.STORED_SCALE, resolvedScale);
+
+        PacketDistributor.sendToPlayersTrackingEntity(corpse, new MessageCorpseScale(corpse.getId(), resolvedScale));
     }
 
     @SubscribeEvent

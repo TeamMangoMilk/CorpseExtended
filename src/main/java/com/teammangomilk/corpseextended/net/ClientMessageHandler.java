@@ -1,5 +1,6 @@
 package com.teammangomilk.corpseextended.net;
 
+import com.teammangomilk.corpseextended.client.ClientScaleCache;
 import com.teammangomilk.corpseextended.config.CorpseExtendedClientConfig;
 import com.teammangomilk.corpseextended.config.CorpseExtendedClientConfig.MessageOverride;
 import net.minecraft.client.Minecraft;
@@ -36,5 +37,10 @@ public class ClientMessageHandler
                 player.displayClientMessage(text, true);
             }
         });
+    }
+
+    public static void handleCorpseScale(MessageCorpseScale msg, IPayloadContext ctx)
+    {
+        ctx.enqueueWork(() -> ClientScaleCache.put(msg.entityId(), msg.scale()));
     }
 }
