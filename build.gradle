@@ -1,0 +1,67 @@
+plugins {
+    id 'net.neoforged.gradle.userdev' version "${neogradle_version}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
+    withSourcesJar()
+}
+
+version = mod_version
+group = 'com.teammangomilk.corpseextended'
+
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+
+runs {
+    configureEach {
+        systemProperty 'forge.logging.console.level', 'debug'
+        modSource project.sourceSets.main
+    }
+
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+    }
+
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+        programArgument '--nogui'
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.neoforged.net/releases' }
+    // Parchment mappings
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+    // Local flat-dir repo for the corpse JAR (place corpse-${corpse_version}.jar in libs/)
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neoforge_version}"
+
+    // Corpse mod — required at compile time and runtime.
+    // Copy corpse-${corpse_version}.jar into the libs/ directory.
+    compileOnly files("libs/corpse-${corpse_version}.jar")
+    runtimeOnly files("libs/corpse-${corpse_version}.jar")
+}
+
+processResources {
+    def replaceProps = [
+            mod_id           : mod_id,
+            mod_version      : mod_version,
+            neoforge_version : neoforge_version,
+            minecraft_version: minecraft_version,
+            corpse_version   : corpse_version
+    ]
+    inputs.properties replaceProps
+    filesMatching('**/*.toml') {
+        expand replaceProps
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

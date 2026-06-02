@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.classpath
+*.project
+*.settings/
+
+# NeoGradle run dirs
+run/
+runs/
+
+# Eclipse
+bin/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Compiled output — never commit JARs except those in libs/ intentionally
+*.jar
+# Allow the libs/ folder to hold the corpse dependency JAR
+!libs/*.jar
