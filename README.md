@@ -17,4 +17,4 @@ A NeoForge compatibility mod for Minecraft 1.21.1 that extends the [Corpse](http
 
 MIT - see [LICENSE](LICENSE).
 
-The Corpse mod itself is **All Rights Reserved** by Max Henkel. This mod does not include or redistribute any of its code or assets.
+The Corpse mod itself is **All Rights Reserved** by [Max Henkel](https://github.com/henkelmax). This mod does not include or redistribute any of its code or assets.
