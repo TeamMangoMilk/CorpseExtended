@@ -55,7 +55,7 @@ public class CorpseExtended
 
     private void clientSetup(FMLClientSetupEvent event)
     {
-        EntityRenderers.register(Main.CORPSE_ENTITY_TYPE.get(), ScaledCorpseRenderer::new);
+        event.enqueueWork(() -> EntityRenderers.register(Main.CORPSE_ENTITY_TYPE.get(), ScaledCorpseRenderer::new));
 
         NeoForge.EVENT_BUS.addListener((EntityLeaveLevelEvent e) ->
         {

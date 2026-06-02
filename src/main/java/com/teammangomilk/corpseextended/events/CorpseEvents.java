@@ -36,6 +36,9 @@ public class CorpseEvents
             if (xp > 0)
             {
                 pendingXp.put(uuid, xp);
+                player.totalExperience = 0;
+                player.experienceLevel = 0;
+                player.experienceProgress = 0.0f;
             }
         }
 
