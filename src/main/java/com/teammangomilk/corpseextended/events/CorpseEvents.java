@@ -12,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
@@ -67,7 +68,16 @@ public class CorpseEvents
         float resolvedScale = (scale != null) ? scale : 1.0f;
         corpse.setData(XpAttachment.STORED_SCALE, resolvedScale);
 
-        PacketDistributor.sendToPlayersTrackingEntity(corpse, new MessageCorpseScale(corpse.getId(), resolvedScale));
+    }
+
+    @SubscribeEvent
+    public void onStartTracking(PlayerEvent.StartTracking event)
+    {
+        if (!(event.getTarget() instanceof CorpseEntity corpse)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        float scale = corpse.getData(XpAttachment.STORED_SCALE);
+        PacketDistributor.sendToPlayer(player, new MessageCorpseScale(corpse.getId(), scale));
     }
 
     @SubscribeEvent

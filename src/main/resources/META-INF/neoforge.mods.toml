@@ -7,6 +7,8 @@ issueTrackerURL = "https://github.com/TeamMangoMilk/CorpseExtended/issues"
 modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "Corpse Extended"
+authors = "TeamMangoMilk"
+credits = "henkelmax (original Corpse mod)"
 description = '''
 Extends the Corpse mod with additional configuration options and features.
 Requires the Corpse mod to be installed.
