@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.teammangomilk.corpseextended.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinCorpseInventoryContainer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
